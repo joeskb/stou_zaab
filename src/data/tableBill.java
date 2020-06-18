@@ -30,7 +30,7 @@ public class tableBill extends styleSetter{
 				{null, null, null},
 				{null, null, null}
 		};
-		String columns[] = {"�Ţ�����","�ʹ���(�ҷ)",""};
+		String columns[] = {"àÅ¢·ÕèºÔÅ","ÂÍ´ÃÇÁ(ºÒ·)",""};
 		DefaultTableModel tableModel = new DefaultTableModel(data,columns) {
 			public boolean isCellEditable(int row, int column) {
 				return false;
@@ -74,7 +74,7 @@ public class tableBill extends styleSetter{
 				modelBill.addRow(new Object[0]);
 				modelBill.setValueAt(rs.getString("bill_id"), row, 0);
 				modelBill.setValueAt(rs.getString("bill_total"), row, 1);
-				modelBill.setValueAt("�示��", row, 2);
+				modelBill.setValueAt("àªç¤ºÔÅ", row, 2);
 				row++;
 			}
 			tBill.setModel(modelBill);
@@ -100,15 +100,25 @@ public class tableBill extends styleSetter{
 	public void insertData(String name, int amount) {
 		/*try {
 			String sql1 = "INSERT INTO bill  (bill_id, bill_total) values(null,0)";
-			PreparedStatement pre1 = conn.prepareStatement(sql1);
+			PreparedStatement pre1 = conn.prepareStatement(sql1,Statement.RETURN_GENERATED_KEYS);
 			
-			String sql2 = "INSERT INTO order (odr_id, odr_food_id, odr_amount, odr_price, odr_bill_id) values(null,?,?,?,?)";
-			PreparedStatement pre2 = conn.prepareStatement(sql2);
-			//pre2.setString(1,name);
-			pre2.setInt(3,amount);
-			
-			if(pre2.executeUpdate() != -1) {
-				mainMenu.toOrder();
+			if(pre1.executeUpdate() < 1) {
+				throw new SQLException("Cannot insert into bill");
+			}
+			try(ResultSet generatedKey = pre1.getGeneratedKeys() ) {
+				if(generatedKey.next()) {
+					 String bill_id = generatedKey.getString(1);
+					 //System.out.println(bill_id);//for debug
+					 String sql2 = "INSERT INTO order (odr_id, odr_food_id, odr_amount, odr_price, odr_bill_id) values(null,?,?,?,?)";
+						PreparedStatement pre2 = conn.prepareStatement(sql2);
+						//pre2.setString(1,name);
+						pre2.setInt(3,amount);
+						pre2.setString(5, bill_id);
+						
+						if(pre2.executeUpdate() != -1) {
+							mainMenu.toOrder();
+						}
+				}
 			}
 		} catch(SQLException e){
 			e.printStackTrace();
